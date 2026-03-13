@@ -16,10 +16,12 @@ public class PriceService {
 
     private final CropRepository cropRepository;
     private final CropPriceRepository cropPriceRepository;
+    private final NotificationService notificationService;
 
-    public PriceService(CropRepository cropRepository, CropPriceRepository cropPriceRepository) {
+    public PriceService(CropRepository cropRepository, CropPriceRepository cropPriceRepository, NotificationService notificationService) {
         this.cropRepository = cropRepository;
         this.cropPriceRepository = cropPriceRepository;
+        this.notificationService = notificationService;
     }
 
     public void savePrice(PriceRequest request) {
@@ -48,6 +50,7 @@ public class PriceService {
             price.setAvgPrice(avg);
         }
         cropPriceRepository.save(price);
+        notificationService.sendWhatsappMessage(price.getCrop().getName(),price.getCrop().getTamilName(),price.getMinPrice(),price.getMaxPrice());
     }
     public List<CropPriceTableResponse> getLastFourDaysPrices(){
 
