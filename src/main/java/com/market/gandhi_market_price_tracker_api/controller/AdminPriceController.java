@@ -3,13 +3,10 @@ package com.market.gandhi_market_price_tracker_api.controller;
 import com.market.gandhi_market_price_tracker_api.dto.PriceRequest;
 import com.market.gandhi_market_price_tracker_api.service.PriceService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/admin/prices")
+@RequestMapping("/admin")
 public class AdminPriceController {
 
     private final PriceService priceService;
@@ -18,9 +15,10 @@ public class AdminPriceController {
         this.priceService = priceService;
     }
 
-    @PostMapping
+    @PostMapping("/prices")
     public ResponseEntity<?> savePrice(@RequestBody PriceRequest request) {
         priceService.savePrice(request);
         return ResponseEntity.ok("Price saved successfully");
     }
+
 }
