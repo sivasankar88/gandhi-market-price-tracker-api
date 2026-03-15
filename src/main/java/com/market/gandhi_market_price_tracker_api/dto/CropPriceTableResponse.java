@@ -6,6 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CropPriceTableResponse {
+    private Long id;
     private String cropName;
     private String tamilName;
     private Integer minPrice1;
@@ -17,7 +18,8 @@ public class CropPriceTableResponse {
     private Integer maxPrice3;
     private Integer maxPrice4;
 
-    public CropPriceTableResponse(String cropName,String tamilName){
+    public CropPriceTableResponse(Long id,String cropName,String tamilName){
+        this.id = id;
         this.cropName = cropName;
         this.tamilName = tamilName;
     }

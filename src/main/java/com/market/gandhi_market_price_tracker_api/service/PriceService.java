@@ -2,14 +2,25 @@ package com.market.gandhi_market_price_tracker_api.service;
 
 import com.market.gandhi_market_price_tracker_api.dto.CropPriceTableResponse;
 import com.market.gandhi_market_price_tracker_api.dto.PriceRequest;
+import com.market.gandhi_market_price_tracker_api.dto.PriceTrendResponse;
 import com.market.gandhi_market_price_tracker_api.entity.Crop;
 import com.market.gandhi_market_price_tracker_api.entity.CropPrice;
 import com.market.gandhi_market_price_tracker_api.repository.CropPriceRepository;
 import com.market.gandhi_market_price_tracker_api.repository.CropRepository;
 import org.springframework.stereotype.Service;
+import com.market.gandhi_market_price_tracker_api.entity.CropPrice;
+import com.market.gandhi_market_price_tracker_api.repository.CropPriceRepository;
+import com.market.gandhi_market_price_tracker_api.dto.PriceTrendResponse;
 
 import java.time.LocalDate;
+import java.time.Month;
+import java.time.format.TextStyle;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.time.LocalDate;
+import java.time.format.TextStyle;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 @Service
 public class PriceService {
@@ -29,7 +40,7 @@ public class PriceService {
         Integer min = request.getMinPrice();
         Integer max = request.getMaxPrice();
         Integer avg = (min + max) / 2;
-
+        System.out.println(request.getMinPrice());
         LocalDate today = LocalDate.now();
 
         Optional<CropPrice> existing = cropPriceRepository.findByCropIdAndPriceDate(request.getCropId(),today);
@@ -52,6 +63,7 @@ public class PriceService {
         cropPriceRepository.save(price);
         notificationService.sendWhatsappMessage(price.getCrop().getName(),price.getCrop().getTamilName(),price.getMinPrice(),price.getMaxPrice());
     }
+
     public List<CropPriceTableResponse> getLastFourDaysPrices(){
 
         LocalDate date = LocalDate.now().minusDays(3);
@@ -66,6 +78,7 @@ public class PriceService {
 
             if(row == null){
                 row = new CropPriceTableResponse(
+                        price.getCrop().getId(),
                         price.getCrop().getName(),
                         price.getCrop().getTamilName()
                 );
@@ -92,5 +105,69 @@ public class PriceService {
         }
 
         return new ArrayList<>(map.values());
+    }
+
+
+    public List<PriceTrendResponse> getTrend(Long cropId, String type) {
+
+        switch (type) {
+
+            case "LAST30":
+                return Last30DaysTrend(cropId);
+
+            case "MONTHLY":
+                return monthlyTrend(cropId);
+
+            case "YEARLY":
+                return yearlyTrend(cropId);
+
+            default:
+                throw new RuntimeException("Invalid trend type");
+        }
+    }
+
+    private List<PriceTrendResponse> Last30DaysTrend(Long cropId) {
+
+        LocalDate end = LocalDate.now();
+        LocalDate start = end.minusDays(29);
+
+        List<CropPrice> prices =
+                cropPriceRepository.findByCropIdAndPriceDateBetweenOrderByPriceDate(
+                        cropId,
+                        start,
+                        end
+                );
+
+        return prices.stream()
+                .map(p -> new PriceTrendResponse(
+                        p.getPriceDate().toString(),
+                        p.getAvgPrice()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    private List<PriceTrendResponse> monthlyTrend(Long cropId) {
+
+        List<Object[]> results = cropPriceRepository.getMonthlyAverage(cropId);
+
+        return results.stream()
+                .map(r -> new PriceTrendResponse(
+                        Month.of(((Number) r[0]).intValue())
+                                .getDisplayName(TextStyle.SHORT, Locale.ENGLISH),
+                        ((Number) r[1]).intValue()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    private List<PriceTrendResponse> yearlyTrend(Long cropId) {
+
+        List<Object[]> results = cropPriceRepository.getYearlyAverage(cropId);
+
+        return results.stream()
+                .map(r -> new PriceTrendResponse(
+                        String.valueOf(((Number) r[0]).intValue()),
+                        ((Number) r[1]).intValue()
+                ))
+                .collect(Collectors.toList());
     }
 }

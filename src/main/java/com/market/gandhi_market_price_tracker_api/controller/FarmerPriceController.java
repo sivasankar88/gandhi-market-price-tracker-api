@@ -1,17 +1,17 @@
 package com.market.gandhi_market_price_tracker_api.controller;
 
 import com.market.gandhi_market_price_tracker_api.dto.CropPriceTableResponse;
+import com.market.gandhi_market_price_tracker_api.dto.PriceTrendResponse;
 import com.market.gandhi_market_price_tracker_api.entity.Crop;
 import com.market.gandhi_market_price_tracker_api.service.CropService;
 import com.market.gandhi_market_price_tracker_api.service.PriceService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/public")
+@CrossOrigin(origins = "http://localhost:5173")
 public class FarmerPriceController {
 
     private final PriceService priceService;
@@ -26,8 +26,13 @@ public class FarmerPriceController {
         return priceService.getLastFourDaysPrices();
     }
 
-    @GetMapping("allCrops")
+    @GetMapping("/allCrops")
     public List<Crop> getAllCrops(){
         return this.cropService.getAllCrops();
+    }
+
+    @GetMapping("/prices/trend")
+    public List<PriceTrendResponse> getPriceTrend(@RequestParam Long cropId, @RequestParam String type) {
+        return priceService.getTrend(cropId,type);
     }
 }

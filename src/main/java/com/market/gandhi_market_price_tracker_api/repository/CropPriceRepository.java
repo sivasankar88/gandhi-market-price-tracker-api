@@ -18,4 +18,25 @@ public interface CropPriceRepository extends JpaRepository<CropPrice,Long> {
  """)
     List<CropPrice> findByPriceDateAfter(LocalDate date);
     Optional<CropPrice> findByCropIdAndPriceDate(Long cropId, LocalDate date);
+    List<CropPrice> findByCropIdAndPriceDateBetweenOrderByPriceDate(Long cropId, LocalDate start, LocalDate end);
+    @Query("""
+        SELECT EXTRACT(MONTH FROM cp.priceDate), AVG(cp.avgPrice)
+        FROM CropPrice cp
+        WHERE cp.crop.id = :cropId
+        AND EXTRACT(YEAR FROM cp.priceDate) = EXTRACT(YEAR FROM CURRENT_DATE)
+        GROUP BY EXTRACT(MONTH FROM cp.priceDate)
+        ORDER BY EXTRACT(MONTH FROM cp.priceDate)
+    """)
+    List<Object[]> getMonthlyAverage(Long cropId);
+
+
+    @Query("""
+        SELECT EXTRACT(YEAR FROM cp.priceDate), AVG(cp.avgPrice)
+        FROM CropPrice cp
+        WHERE cp.crop.id = :cropId
+        AND cp.priceDate >= CURRENT_DATE - 5 YEAR
+        GROUP BY EXTRACT(YEAR FROM cp.priceDate)
+        ORDER BY EXTRACT(YEAR FROM cp.priceDate)
+    """)
+    List<Object[]> getYearlyAverage(Long cropId);
 }

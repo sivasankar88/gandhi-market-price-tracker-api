@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+
 @Service
 public class CropService {
 
@@ -18,4 +19,5 @@ public class CropService {
     public List<Crop> getAllCrops() {
         return cropRepository.findAll();
     }
+
 }
