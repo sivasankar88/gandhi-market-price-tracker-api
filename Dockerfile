@@ -15,4 +15,4 @@ RUN ./mvnw clean package -DskipTests
 
 EXPOSE 8080
 
-CMD ["java","-jar","target/*.jar"]
+CMD ["java","-jar","target/gandhi-market-price-tracker-api-0.0.1-SNAPSHOT.jar"]
