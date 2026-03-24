@@ -1,8 +1,10 @@
 package com.market.gandhi_market_price_tracker_api.repository;
 
+import com.market.gandhi_market_price_tracker_api.dto.CurrentDayPriceResponse;
 import com.market.gandhi_market_price_tracker_api.entity.CropPrice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -39,4 +41,18 @@ public interface CropPriceRepository extends JpaRepository<CropPrice,Long> {
         ORDER BY EXTRACT(YEAR FROM cp.priceDate)
     """)
     List<Object[]> getYearlyAverage(Long cropId);
+
+    @Query("""
+        SELECT
+            a.id AS id,
+            a.name AS name,
+            a.tamilName AS tamilName,
+            COALESCE(b.maxPrice, 0) AS maxPrice,
+            COALESCE(b.minPrice, 0) AS minPrice
+        FROM Crop a
+        LEFT JOIN CropPrice b
+            ON a.id = b.crop.id
+            AND b.priceDate = :date
+    """)
+    List<CurrentDayPriceResponse> cropPriceForCurrentDay(@Param("date") LocalDate date);
 }

@@ -1,5 +1,6 @@
 package com.market.gandhi_market_price_tracker_api.service;
 
+import com.market.gandhi_market_price_tracker_api.dto.CropRequest;
 import com.market.gandhi_market_price_tracker_api.entity.Crop;
 import com.market.gandhi_market_price_tracker_api.repository.CropRepository;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,13 @@ public class CropService {
 
     public List<Crop> getAllCrops() {
         return cropRepository.findAll();
+    }
+
+    public void saveCrop(CropRequest request) {
+        Crop crop = new Crop();
+        crop.setName(request.getName());
+        crop.setTamilName(request.getTamilName());
+        cropRepository.save(crop);
     }
 
 }

@@ -1,8 +1,6 @@
 package com.market.gandhi_market_price_tracker_api.service;
 
-import com.market.gandhi_market_price_tracker_api.dto.CropPriceTableResponse;
-import com.market.gandhi_market_price_tracker_api.dto.PriceRequest;
-import com.market.gandhi_market_price_tracker_api.dto.PriceTrendResponse;
+import com.market.gandhi_market_price_tracker_api.dto.*;
 import com.market.gandhi_market_price_tracker_api.entity.Crop;
 import com.market.gandhi_market_price_tracker_api.entity.CropPrice;
 import com.market.gandhi_market_price_tracker_api.repository.CropPriceRepository;
@@ -61,7 +59,12 @@ public class PriceService {
             price.setAvgPrice(avg);
         }
         cropPriceRepository.save(price);
-        notificationService.sendWhatsappMessage(price.getCrop().getName(),price.getCrop().getTamilName(),price.getMinPrice(),price.getMaxPrice());
+        //notificationService.sendWhatsappMessage(price.getCrop().getName(),price.getCrop().getTamilName(),price.getMinPrice(),price.getMaxPrice());
+    }
+
+    public List<CurrentDayPriceResponse> cropPriceForCurrentDay () {
+        LocalDate date = LocalDate.now();
+        return cropPriceRepository.cropPriceForCurrentDay(date);
     }
 
     public List<CropPriceTableResponse> getLastFourDaysPrices(){
@@ -106,7 +109,6 @@ public class PriceService {
 
         return new ArrayList<>(map.values());
     }
-
 
     public List<PriceTrendResponse> getTrend(Long cropId, String type) {
 

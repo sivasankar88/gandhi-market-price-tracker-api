@@ -9,10 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = {
-        "http://localhost:5173",
-        "https://gandhi-market-price-tracker-ui.vercel.app"
-})
+
 public class AuthController {
 
     private final AuthService authService;
