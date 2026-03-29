@@ -55,4 +55,7 @@ public interface CropPriceRepository extends JpaRepository<CropPrice,Long> {
             AND b.priceDate = :date
     """)
     List<CurrentDayPriceResponse> cropPriceForCurrentDay(@Param("date") LocalDate date);
+
+    @Query("SELECT cp.crop.id FROM CropPrice cp WHERE cp.priceDate = :date")
+    List <Long> findCropIdsWithPriceForDate(@Param("date") LocalDate date);
 }
