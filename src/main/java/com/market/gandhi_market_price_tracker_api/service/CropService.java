@@ -17,10 +17,6 @@ public class CropService {
         this.cropRepository = cropRepository;
     }
 
-    public List<Crop> getAllCrops() {
-        return cropRepository.findAll();
-    }
-
     public void saveCrop(CropRequest request) {
         Crop crop = new Crop();
         crop.setName(request.getName());

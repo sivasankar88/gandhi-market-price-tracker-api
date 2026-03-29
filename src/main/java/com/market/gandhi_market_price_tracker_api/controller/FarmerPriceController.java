@@ -14,20 +14,13 @@ import java.util.List;
 public class FarmerPriceController {
 
     private final PriceService priceService;
-    private final CropService cropService;
-    public FarmerPriceController(PriceService priceService, CropService cropService){
+    public FarmerPriceController(PriceService priceService){
         this.priceService = priceService;
-        this.cropService = cropService;
     }
 
     @GetMapping("/farmerDashboard")
     public List<CropPriceTableResponse> getLastFourDays(){
         return priceService.getLastFourDaysPrices();
-    }
-
-    @GetMapping("/allCrops")
-    public List<Crop> getAllCrops(){
-        return this.cropService.getAllCrops();
     }
 
     @GetMapping("/prices/trend")

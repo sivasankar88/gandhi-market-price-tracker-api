@@ -38,7 +38,6 @@ public class PriceService {
         Integer min = request.getMinPrice();
         Integer max = request.getMaxPrice();
         Integer avg = (min + max) / 2;
-        System.out.println(request.getMinPrice());
         LocalDate today = LocalDate.now();
 
         Optional<CropPrice> existing = cropPriceRepository.findByCropIdAndPriceDate(request.getCropId(),today);
