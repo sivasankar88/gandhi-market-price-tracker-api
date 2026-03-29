@@ -27,7 +27,7 @@ public class ReminderScheduler {
         System.out.println("Mail sent");
     }
 
-    @Scheduled(cron = "0 0 19 * * *", zone="Asia/Kolkata")
+    @Scheduled(cron = "0 0 21 * * *", zone="Asia/Kolkata")
     public void notifyMissingPrices() {
         LocalDate today = LocalDate.now();
         List<Crop> allCrops = cropRepository.findAll();
