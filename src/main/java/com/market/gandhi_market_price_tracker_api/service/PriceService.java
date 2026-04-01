@@ -3,11 +3,10 @@ package com.market.gandhi_market_price_tracker_api.service;
 import com.market.gandhi_market_price_tracker_api.dto.*;
 import com.market.gandhi_market_price_tracker_api.entity.Crop;
 import com.market.gandhi_market_price_tracker_api.entity.CropPrice;
+import com.market.gandhi_market_price_tracker_api.exception.custom.ResourceNotFoundException;
 import com.market.gandhi_market_price_tracker_api.repository.CropPriceRepository;
 import com.market.gandhi_market_price_tracker_api.repository.CropRepository;
 import org.springframework.stereotype.Service;
-import com.market.gandhi_market_price_tracker_api.entity.CropPrice;
-import com.market.gandhi_market_price_tracker_api.repository.CropPriceRepository;
 import com.market.gandhi_market_price_tracker_api.dto.PriceTrendResponse;
 
 import java.time.LocalDate;
@@ -15,10 +14,7 @@ import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.time.LocalDate;
-import java.time.format.TextStyle;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 @Service
 public class PriceService {
@@ -34,7 +30,7 @@ public class PriceService {
     }
 
     public void savePrice(PriceRequest request) {
-        Crop crop = cropRepository.findById(request.getCropId()).orElseThrow(() -> new RuntimeException("Crop not found"));
+        Crop crop = cropRepository.findById(request.getCropId()).orElseThrow(() -> new ResourceNotFoundException("Crop not found with id: " + request.getCropId()));
         Integer min = request.getMinPrice();
         Integer max = request.getMaxPrice();
         Integer avg = (min + max) / 2;
@@ -111,20 +107,13 @@ public class PriceService {
 
     public List<PriceTrendResponse> getTrend(Long cropId, String type) {
 
-        switch (type) {
-
-            case "LAST30":
-                return Last30DaysTrend(cropId);
-
-            case "MONTHLY":
-                return monthlyTrend(cropId);
-
-            case "YEARLY":
-                return yearlyTrend(cropId);
-
-            default:
-                throw new RuntimeException("Invalid trend type");
-        }
+        return switch (type) {
+            case "LAST30" -> Last30DaysTrend(cropId);
+            case "MONTHLY" -> monthlyTrend(cropId);
+            case "YEARLY" -> yearlyTrend(cropId);
+            default ->
+                    throw new InvalidRequestException("Invalid trend type: " + type + ". Accepted: LAST30, MONTHLY, YEARLY");
+        };
     }
 
     private List<PriceTrendResponse> Last30DaysTrend(Long cropId) {

@@ -1,5 +1,6 @@
 package com.market.gandhi_market_price_tracker_api.service;
 
+import com.market.gandhi_market_price_tracker_api.exception.custom.MailDeliveryException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
@@ -34,7 +35,11 @@ public class EmailService {
                 "Note: This is an automated message. Please do not reply to this email.";
 
         message.setText(body);
-        mailSender.send(message);
+        try {
+            mailSender.send(message);
+        } catch (Exception e) {
+            throw new MailDeliveryException("Failed to send reminder email to: " + adminEmail);
+        }
     }
 
     public void sendMissingPriceAlert(List<String> missingCrops) {
@@ -58,7 +63,11 @@ public class EmailService {
         body.append("Note: This is an automated message. Please do not reply to this email.");
 
         message.setText(body.toString());
-        mailSender.send(message);
+        try {
+            mailSender.send(message);
+        } catch (Exception e) {
+            throw new MailDeliveryException("Failed to send missing price alert to: " + adminEmail);
+        }
 
     }
 }

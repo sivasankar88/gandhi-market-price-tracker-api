@@ -2,6 +2,7 @@ package com.market.gandhi_market_price_tracker_api.service;
 
 import com.market.gandhi_market_price_tracker_api.dto.AuthRequest;
 import com.market.gandhi_market_price_tracker_api.dto.AuthResponse;
+import com.market.gandhi_market_price_tracker_api.exception.custom.InvalidCredentialsException;
 import com.market.gandhi_market_price_tracker_api.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,7 @@ public class AuthService {
     public AuthResponse login(AuthRequest request) {
         if (!request.getUsername().equals(adminUsername) ||
                 !request.getPassword().equals(adminPassword)) {
-            throw new RuntimeException("Invalid credentials");
+            throw new InvalidCredentialsException("Invalid credentials");
         }
         String accessToken = jwtUtil.generateAccessToken(request.getUsername());
         String refreshToken = jwtUtil.generateRefreshToken(request.getUsername());

@@ -2,6 +2,7 @@ package com.market.gandhi_market_price_tracker_api.service;
 
 import com.market.gandhi_market_price_tracker_api.dto.CropRequest;
 import com.market.gandhi_market_price_tracker_api.entity.Crop;
+import com.market.gandhi_market_price_tracker_api.exception.custom.DuplicateResourceException;
 import com.market.gandhi_market_price_tracker_api.repository.CropRepository;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,10 @@ public class CropService {
     }
 
     public void saveCrop(CropRequest request) {
+        boolean exists = cropRepository.existsByName(request.getName());
+
+        if(exists) throw new DuplicateResourceException("Crop already exists: " + request.getName());
+
         Crop crop = new Crop();
         crop.setName(request.getName());
         crop.setTamilName(request.getTamilName());
